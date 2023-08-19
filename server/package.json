@@ -6,7 +6,8 @@
   "scripts": {
     "build": "npx tsc",
     "prod": "node dist/index.js",
-    "start": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\""
+    "start": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\"",
+    "cod4dbschema": "npx kysely-codegen --url env(COD4_DATABASE_URL) --out-file cod4/v1/db/schema.ts"
   },
   "keywords": [],
   "author": "",
