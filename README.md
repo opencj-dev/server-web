@@ -1,2 +1,0 @@
-# server-web
-OpenCJ Website
