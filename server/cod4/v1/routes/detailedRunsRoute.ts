@@ -1,5 +1,6 @@
 import express from "express";
 import { getAllDetailedRunsByPlayerId } from "../controllers/detailedRunsController";
+import { z } from "zod";
 
 export const detailedRunsRoute = express.Router();
 
@@ -45,19 +46,41 @@ export const detailedRunsRoute = express.Router();
  *
  */
 detailedRunsRoute.get("/", async (req, res) => {
-  const offset = req.query.offset as string | undefined;
-  const limit = req.query.limit as string | undefined;
-  const playerId = req.query.playerId as string | undefined;
-  const mapId = req.query.mapId as string | undefined;
+  try {
+    const queryParams = z
+      .object({
+        offset: z.coerce
+          .number({ invalid_type_error: "offset must be a number" })
+          .int()
+          .nonnegative(),
+        limit: z.coerce
+          .number({ invalid_type_error: "limit must be a number" })
+          .int()
+          .nonnegative(),
+        playerId: z.optional(
+          z.coerce
+            .number({ invalid_type_error: "playerId must be a number" })
+            .int()
+        ),
+        mapId: z.optional(
+          z.coerce
+            .number({ invalid_type_error: "mapId must be a number" })
+            .int()
+        ),
+      })
+      .parse(req.query);
 
-  const cod4DetailedRuns = await getAllDetailedRunsByPlayerId(
-    Number(offset ?? 0),
-    Number(limit ?? 1),
-    {
-      playerId: playerId ? Number(playerId) : undefined,
-      mapId: mapId ? Number(mapId) : undefined,
-    }
-  );
+    const cod4DetailedRuns = await getAllDetailedRunsByPlayerId(
+      queryParams.offset,
+      queryParams.limit,
+      {
+        playerId: queryParams.playerId,
+        mapId: queryParams.mapId,
+      }
+    );
 
-  res.send(cod4DetailedRuns);
+    res.send(cod4DetailedRuns);
+  } catch (e) {
+    res.status(400).send({ error: e });
+  }
 });

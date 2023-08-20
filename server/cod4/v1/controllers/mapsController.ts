@@ -9,11 +9,11 @@ export async function getAllMaps() {
   return cod4Maps;
 }
 
-export async function getMapByName(mapName: string) {
+export async function getMapByName(mapId: number) {
   const map = await cod4DB
     .selectFrom("mapids")
     .selectAll()
-    .where("mapname", "=", mapName)
+    .where("mapID", "=", mapId)
     .executeTakeFirst();
 
   if (!map) {
@@ -27,7 +27,7 @@ export async function searchMapByName(mapName: string) {
   const maps = await cod4DB
     .selectFrom("mapids")
     .selectAll()
-    .where("mapname", "like", `${mapName}%`)
+    .where("mapname", "like", `%${mapName}%`)
     .execute();
 
   const cod4Maps = maps.map((map) => new Cod4Map(map));
