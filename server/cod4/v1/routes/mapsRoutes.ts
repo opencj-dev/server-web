@@ -54,7 +54,6 @@ mapRouter.get("/", async (_, res) => {
  *               $ref: '#/components/schemas/Cod4Map'
  *       400:
  *        description: Map not found
- *
  */
 mapRouter.get("/search", async (req, res) => {
   try {

@@ -24,10 +24,13 @@ export async function getMapByName(mapId: number) {
 }
 
 export async function searchMapByName(mapName: string) {
+  const upperMapName = mapName.toUpperCase();
   const maps = await cod4DB
     .selectFrom("mapids")
     .selectAll()
-    .where("mapname", "like", `%${mapName}%`)
+    .where(({ eb, fn }) =>
+      eb(fn("upper", ["mapname"]), "like", `%${upperMapName}%`)
+    )
     .execute();
 
   const cod4Maps = maps.map((map) => new Cod4Map(map));

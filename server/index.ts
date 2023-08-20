@@ -21,6 +21,7 @@ app.use(compression());
  * authentication?
  * think of better way to return non 200 status codes
  * make common validators for inputs such as offset and limit
+ * better way to write schema docs
  */
 
 app.use((req, res, next) => {

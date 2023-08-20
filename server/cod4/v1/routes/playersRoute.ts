@@ -1,5 +1,9 @@
 import express from "express";
-import { getAllPlayers, getPlayerById } from "../controllers/playersController";
+import {
+  getAllPlayers,
+  getPlayerById,
+  searchPlayersByName,
+} from "../controllers/playersController";
 import { z } from "zod";
 
 export const playersRoute = express.Router();
@@ -28,6 +32,79 @@ export const playersRoute = express.Router();
 playersRoute.get("/", async (_, res) => {
   const cod4Players = await getAllPlayers();
   res.send(cod4Players);
+});
+
+/**
+ * @swagger
+ * /api/cod4/v1/players/search:
+ *  get:
+ *    summary: Search for a player by name
+ *    tags: [Players]
+ *    parameters:
+ *      - in: query
+ *        name: offset
+ *        required: true
+ *        default: 0
+ *        schema:
+ *          type: integer
+ *      - in: query
+ *        name: limit
+ *        required: true
+ *        default: 25
+ *        schema:
+ *          type: integer
+ *      - in: query
+ *        name: playerName
+ *        required: true
+ *        schema:
+ *          type: string
+ *    responses:
+ *      200:
+ *        description: Found players.
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                items:
+ *                  type: array
+ *                  items:
+ *                    $ref: '#/components/schemas/Cod4Player'
+ *                offset:
+ *                  type: integer
+ *                limit:
+ *                  type: integer
+ *                total:
+ *                  type: integer
+ */
+playersRoute.get("/search", async (req, res) => {
+  try {
+    const queryParams = z
+      .object({
+        offset: z.coerce
+          .number({ invalid_type_error: "offset must be a number" })
+          .int()
+          .nonnegative(),
+        limit: z.coerce
+          .number({ invalid_type_error: "limit must be a number" })
+          .int()
+          .nonnegative(),
+        playerName: z.coerce.string({
+          invalid_type_error: "playerName must be a string",
+        }),
+      })
+      .parse(req.query);
+
+    const cod4Players = await searchPlayersByName(
+      queryParams.offset,
+      queryParams.limit,
+      queryParams.playerName
+    );
+
+    res.send(cod4Players);
+  } catch (e) {
+    res.status(400).send({ error: e });
+  }
 });
 
 /**
