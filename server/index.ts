@@ -19,6 +19,8 @@ app.use(compression());
  * cors?
  * restrict routes to certain urls?
  * authentication?
+ * think of better way to return non 200 status codes
+ * make common validators for inputs such as offset and limit
  */
 
 app.use((req, res, next) => {

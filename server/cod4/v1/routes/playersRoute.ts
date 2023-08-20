@@ -1,5 +1,6 @@
 import express from "express";
 import { getAllPlayers, getPlayerById } from "../controllers/playersController";
+import { z } from "zod";
 
 export const playersRoute = express.Router();
 
@@ -48,18 +49,25 @@ playersRoute.get("/", async (_, res) => {
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Cod4Player'
- *       400:
- *        description: Map not found
+ *       404:
+ *        description: Player not found
  *
  */
 playersRoute.get("/:playerId", async (req, res) => {
-  const playerId = req.params.playerId;
+  try {
+    const playerId = z.coerce
+      .number({ invalid_type_error: "playerId should be a number" })
+      .int()
+      .parse(req.params.playerId);
 
-  const cod4Player = await getPlayerById(Number(playerId));
+    const cod4Player = await getPlayerById(playerId);
 
-  if (!cod4Player) {
-    res.status(400).send();
-  } else {
-    res.send(cod4Player);
+    if (!cod4Player) {
+      res.status(404).send("Not found");
+    } else {
+      res.send(cod4Player);
+    }
+  } catch (e) {
+    res.status(400).send({ error: e });
   }
 });
