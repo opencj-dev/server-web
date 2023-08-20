@@ -1,6 +1,7 @@
 import express from "express";
 import { getAllDetailedRunsByPlayerId } from "../controllers/detailedRunsController";
 import { z } from "zod";
+import { paginationValidator } from "../../../common/validators/paginationValidator";
 
 export const detailedRunsRoute = express.Router();
 
@@ -49,14 +50,7 @@ detailedRunsRoute.get("/", async (req, res) => {
   try {
     const queryParams = z
       .object({
-        offset: z.coerce
-          .number({ invalid_type_error: "offset must be a number" })
-          .int()
-          .nonnegative(),
-        limit: z.coerce
-          .number({ invalid_type_error: "limit must be a number" })
-          .int()
-          .nonnegative(),
+        ...paginationValidator,
         playerId: z.optional(
           z.coerce
             .number({ invalid_type_error: "playerId must be a number" })

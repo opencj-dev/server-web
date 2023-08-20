@@ -5,6 +5,7 @@ import {
   searchPlayersByName,
 } from "../controllers/playersController";
 import { z } from "zod";
+import { paginationValidator } from "../../../common/validators/paginationValidator";
 
 export const playersRoute = express.Router();
 
@@ -81,14 +82,7 @@ playersRoute.get("/search", async (req, res) => {
   try {
     const queryParams = z
       .object({
-        offset: z.coerce
-          .number({ invalid_type_error: "offset must be a number" })
-          .int()
-          .nonnegative(),
-        limit: z.coerce
-          .number({ invalid_type_error: "limit must be a number" })
-          .int()
-          .nonnegative(),
+        ...paginationValidator,
         playerName: z.coerce.string({
           invalid_type_error: "playerName must be a string",
         }),
