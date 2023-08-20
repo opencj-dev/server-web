@@ -1,4 +1,4 @@
-export class Pagination<T> {
+export class PaginationResult<T> {
   items: Array<T>;
   offset: number;
   limit: number;

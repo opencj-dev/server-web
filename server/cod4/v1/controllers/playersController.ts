@@ -1,4 +1,4 @@
-import { Pagination } from "../../../common/models/pagination";
+import { PaginationResult } from "../../../common/models/paginationResult";
 import { cod4DB } from "../db/cod4DB";
 import { Cod4Player } from "../models/cod4Player";
 
@@ -56,7 +56,12 @@ export async function searchPlayersByName(
     .executeTakeFirstOrThrow();
 
   const cod4Players = players.map((player) => new Cod4Player(player));
-  const pagination = new Pagination(cod4Players, offset, limit, count.total);
+  const pagination = new PaginationResult(
+    cod4Players,
+    offset,
+    limit,
+    count.total
+  );
 
   return pagination;
 }
